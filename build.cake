@@ -2,6 +2,7 @@
 
 var target = Argument("target", "Build");
 var artifactsDir = "artifacts";
+var version = "2.0.22";
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
