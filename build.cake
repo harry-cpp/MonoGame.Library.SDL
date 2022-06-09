@@ -1,6 +1,7 @@
 #addin nuget:?package=Cake.FileHelpers&version=5.0.0
 
 var target = Argument("target", "Build");
+var artifactsDir = "artifacts";
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -34,7 +35,9 @@ Task("BuildMacOS")
     });
     StartProcess("make", new ProcessSettings { WorkingDirectory = buildDir });
 
-    // Artifact: sdl/build/build/.libs/libSDL2-2.0.0.dylib
+    // Copy artifact
+    CreateDirectory(artifactsDir);
+    CopyFile("sdl/build/build/.libs/libSDL2-2.0.0.dylib", $"{artifactsDir}/libSDL2.dylib");
 });
 
 Task("BuildLinux")
