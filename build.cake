@@ -1,3 +1,4 @@
+#addin nuget:?package=Cake.FileHelpers&version=5.0.0
 
 var target = Argument("target", "Build");
 
@@ -16,7 +17,24 @@ Task("BuildMacOS")
     .WithCriteria(() => IsRunningOnMacOs())
     .Does(() =>
 {
-    
+    // Set new minimum target to 10.15
+    var filePaths = new[] { "sdl/build-scripts/clang-fat.sh" };
+
+    foreach (var filePath in filePaths)
+        ReplaceRegexInFiles(filePath, @"10\.6", "10.15", System.Text.RegularExpressions.RegexOptions.Singleline);
+
+    // Build
+    var buildDir = "sdl/build";
+    CreateDirectory(buildDir);
+    StartProcess("sdl/configure", new ProcessSettings {
+        WorkingDirectory = buildDir,
+        EnvironmentVariables = new Dictionary<string, string>{
+            { "CC", "../build-scripts/clang-fat.sh" }
+        }
+    });
+    StartProcess("make", new ProcessSettings { WorkingDirectory = buildDir });
+
+    // Artifact: sdl/build/build/.libs/libSDL2-2.0.0.dylib
 });
 
 Task("BuildLinux")
