@@ -1,0 +1,42 @@
+
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: build-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-20.04]
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Disable annotations
+        run: echo "::remove-matcher owner=csc::"
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+      - name: Install required dependencies
+        run:   |
+              if [ "$RUNNER_OS" == "Linux" ]; then
+                    sudo apt-get install build-essential git make cmake autoconf automake \
+                      libtool pkg-config libasound2-dev libpulse-dev libaudio-dev libjack-dev \
+                      libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev \
+                      libxinerama-dev libxxf86vm-dev libxss-dev libgl1-mesa-dev libdbus-1-dev \
+                      libudev-dev libgles2-mesa-dev libegl1-mesa-dev libibus-1.0-dev \
+                      fcitx-libs-dev libsamplerate0-dev libsndio-dev libwayland-dev \
+                      libxkbcommon-dev libdrm-dev libgbm-dev
+              fi
+        shell: bash
+      - name: Run CAKE
+        run: dotnet cake
+      - name: Package artifacts
+        uses: actions/upload-artifact@main
+        with:
+          name: SDL-${{ matrix.os }}
+          path: |
+            artifacts/*
+          if-no-files-found: error
