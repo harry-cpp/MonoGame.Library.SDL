@@ -39,4 +39,3 @@ jobs:
           name: SDL-${{ matrix.os }}
           path: |
             artifacts/*
-          if-no-files-found: error
