@@ -12,7 +12,14 @@ Task("BuildWindows")
     .WithCriteria(() => IsRunningOnWindows())
     .Does(() =>
 {
+    // Build
+    var buildDir = "sdl/build";
+    CreateDirectory(buildDir);
+    StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "../ -DCMAKE_BUILD_TYPE=Release" });
+    StartProcess("make", new ProcessSettings { WorkingDirectory = buildDir });
 
+    // Copy artifact
+    CopyDirectory(buildDir, artifactsDir);
 });
 
 Task("BuildMacOS")
@@ -48,7 +55,7 @@ Task("BuildLinux")
     // Build
     var buildDir = "sdl/build";
     CreateDirectory(buildDir);
-    StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "../" });
+    StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "../ -DCMAKE_BUILD_TYPE=Release" });
     StartProcess("make", new ProcessSettings { WorkingDirectory = buildDir });
 
     // Copy artifact
