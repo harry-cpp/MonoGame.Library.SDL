@@ -11,15 +11,9 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-20.04]
     steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
       - name: Add msbuild to PATH
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.0.2
-      - name: Restore dotnet tools
-        run: dotnet tool restore
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run:   |
@@ -31,6 +25,12 @@ jobs:
                 fcitx-libs-dev libsamplerate0-dev libsndio-dev libwayland-dev \
                 libxkbcommon-dev libdrm-dev libgbm-dev
         shell: bash
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Restore dotnet tools
+        run: dotnet tool restore
       - name: Run CAKE
         run: dotnet cake
       - name: Package artifacts
@@ -47,21 +47,23 @@ jobs:
     needs: [ build ]
     if: ${{ github.event_name == 'push' }}
     steps:
-      - name: Download artifacts from Windows
+      - name: Download artifacts for Windows x64
         uses: actions/download-artifact@v3
         with:
           name: SDL-windows-latest
           path: artifacts-windows-x64
-      - name: Download artifacts from macOS
+      - name: Download artifacts for macOS
         uses: actions/download-artifact@v3
         with:
           name: SDL-macos-latest
           path: artifacts-macos
-      - name: Download artifacts from Ubuntu
+      - name: Download artifacts for Linux x64
         uses: actions/download-artifact@v3
         with:
           name: SDL-ubuntu-20.04
           path: artifacts-linux-x64
+      - name: Restore dotnet tools
+        run: dotnet tool restore
       - name: Run CAKE
         run: dotnet cake --target Package
       - name: Push packages
