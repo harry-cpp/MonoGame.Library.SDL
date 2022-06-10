@@ -62,7 +62,24 @@ Task("BuildLinux")
     // Copy artifact
     CreateDirectory(artifactsDir);
     var versionSplit = version.Split('.');
-    CopyFile($"sdl/build/libSDL2-2.0.so.{versionSplit[1]}.{versionSplit[2]}.0", $"{artifactsDir}/libSDL2.so");
+    CopyFile($"sdl/build/libSDL2-2.0.so.{versionSplit[1]}.{versionSplit[2]}.0", $"{artifactsDir}/libSDL2-2.0.so.0");
+});
+
+Task("Package")
+    .Does(() =>
+{
+    var repositoryUrl = "https://github.com/" + EnvironmentVariable("GITHUB_REPOSITORY");
+
+    var dnMsBuildSettings = new DotNetMSBuildSettings();
+    dnMsBuildSettings.WithProperty("Version", version);
+    dnMsBuildSettings.WithProperty("RepositoryUrl", repositoryUrl);
+
+    var dnPackSettings = new DotNetPackSettings();
+    dnPackSettings.MSBuildSettings = dnMsBuildSettings;
+    dnPackSettings.Verbosity = DotNetVerbosity.Minimal;
+    dnPackSettings.Configuration = "Release";   
+
+    DotNetPack("MonoGame.Library.SDL.csproj", dnPackSettings);
 });
 
 //////////////////////////////////////////////////////////////////////

@@ -399,3 +399,7 @@ FodyWeavers.xsd
 
 # CAKE
 tools/
+
+# Artifacts
+artifacts/
+artifacts-*/
