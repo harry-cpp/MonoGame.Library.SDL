@@ -45,11 +45,17 @@ Task("BuildLinux")
     .WithCriteria(() => IsRunningOnLinux())
     .Does(() =>
 {
-    
+    // Build
+    var buildDir = "sdl/build";
+    CreateDirectory(buildDir);
+    StartProcess("cmake ../", new ProcessSettings { WorkingDirectory = buildDir });
+    StartProcess("make", new ProcessSettings { WorkingDirectory = buildDir });
+
+    // Copy artifact
+    CreateDirectory(artifactsDir);
+    var versionSplit = version.Split('.');
+    CopyFile($"sdl/build/libSDL2-2.0.so.{versionSplit[1]}.{versionSplit[2]}.0", $"{artifactsDir}/libSDL2.so");
 });
-
-// IsRunningOnMacOs
-
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
