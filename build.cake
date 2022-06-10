@@ -15,8 +15,8 @@ Task("BuildWindows")
     // Build
     var buildDir = "sdl/build";
     CreateDirectory(buildDir);
-    StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "-DCMAKE_BUILD_TYPE=Release ../" });
-    StartProcess("ninja", new ProcessSettings { WorkingDirectory = buildDir });
+    StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "-A x64 ../" });
+    StartProcess("msbuild", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "SDL2.sln /p:Configuration=Release" });
 
     // Copy artifact
     CopyDirectory(buildDir, artifactsDir);
