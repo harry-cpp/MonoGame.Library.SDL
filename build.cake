@@ -19,7 +19,8 @@ Task("BuildWindows")
     StartProcess("msbuild", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "SDL2.sln /p:Configuration=Release" });
 
     // Copy artifact
-    CopyDirectory(buildDir, artifactsDir);
+    CreateDirectory(artifactsDir);
+    CopyFile("sdl/build/Release/SDL2.dll", $"{artifactsDir}/SDL2.dll");
 });
 
 Task("BuildMacOS")
