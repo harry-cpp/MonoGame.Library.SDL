@@ -47,6 +47,10 @@ jobs:
     needs: [ build ]
     if: ${{ github.event_name == 'push' }}
     steps:
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
       - name: Download artifacts for Windows x64
         uses: actions/download-artifact@v3
         with:
